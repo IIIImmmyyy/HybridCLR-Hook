@@ -1,4 +1,5 @@
 import {logHHex} from "./logger";
+import {Debug, HybridCLR} from "./HybridCLR";
 
 
 export let SymbolFinder = {
@@ -24,10 +25,9 @@ export let SymbolFinder = {
 
     findEnterFrameFromInterpreter: function (callback) {
         let module = Process.findModuleByName("libil2cpp.so");
-        Memory.scan(module.base, module.size, "E0 03 1A AA ?? ?? ?? ?? FB 03 00 AA ?? ?? ?? ?? E1 03 1B AA E2 03 19 AA", {
+        Memory.scan(module.base, module.size, "E0 C3 21 91 E1 03 ?? ??", {
             onMatch: function (address, size) {
                 let symbol = DebugSymbol.fromAddress(address);
-                console.log("find findNative  symbol address : " + (address - module.base).toString(16).toUpperCase());
                 //指令解析
                 let arrayBuffer = address.add(0x18);
                 logHHex(arrayBuffer);
@@ -40,15 +40,26 @@ export let SymbolFinder = {
 
     findNative: function (callback) {
         let module = Process.findModuleByName("libil2cpp.so");
-        Memory.scan(module.base, module.size, "E1 03 1B AA E2 03 14 AA ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 08 01 40 B2", {
+        //find switch code
+        Memory.scan(module.base, module.size, "C8 ?? ?? ?? 1F 21 00 71", {
             onMatch: function (address, size) {
-                let symbol = DebugSymbol.fromAddress(address);
+
                 console.log("find findNative  symbol address : " + (address - module.base).toString(16).toUpperCase());
                 //指令解析
-                let arrayBuffer = address.add(0x8);
-                logHHex(arrayBuffer);
-                let parserBlIns = SymbolFinder.parserBlIns(arrayBuffer);
-                callback(parserBlIns);
+                let lastIns = address;
+                let i = 0;
+                while (true) {
+                    lastIns = lastIns.sub(4);
+                    let opcode = lastIns.readU32();
+                    if (opcode === 0xA9037BFD) {
+                        if (Debug) {
+                            console.log("find STP X29, X30, [SP, #0x30]  symbol address : " + (lastIns - module.base).toString(16).toUpperCase());
+                        }
+                        let nativePointer = lastIns.sub(0xc);
+                        callback(nativePointer);
+                        break
+                    }
+                }
                 return 'stop';
             }
         })
