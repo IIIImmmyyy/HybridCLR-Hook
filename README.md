@@ -87,3 +87,13 @@ export let TestJs={
 > #### 执行命令 npm run watch
 > #### 生成-agent.js 脚本
 > #### frida命令运行 ： frida -U -l _agent.js -f com.DefaultCompany.TestHybridCLR
+
+## 已知问题
+> #### 1. 由于依赖特征码查找，函数inline的情况下 EnterFrameFromInterpreter有可能会找不到 导致大部分在函数内的循环调用无法监控，此时请屏蔽:
+````javascript
+SymbolFinder.findEnterFrameFromInterpreter(function (address) {
+HybridCLR.doAttach(address);
+});
+````
+> #### 2. 由于样本不多，特征码的查找可能会有问题，如果有问题请提issue，并提供样本
+
