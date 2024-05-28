@@ -71,9 +71,9 @@ export let HybridCLR = {
             return
         }
 
-        // SymbolFinder.findEnterFrameFromInterpreter(function (address) {
-        //     HybridCLR.doAttach(address);
-        // });
+        SymbolFinder.findEnterFrameFromInterpreter(function (address) {
+            HybridCLR.doAttach(address);
+        });
         SymbolFinder.findNative(function (address) {
             HybridCLR.doAttach(address);
         });
