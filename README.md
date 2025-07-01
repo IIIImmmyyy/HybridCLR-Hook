@@ -4,6 +4,7 @@
 # [Android U3D手游安全中级篇] 
 # [https://github.com/IIIImmmyyy/u3dCourse](https://github.com/IIIImmmyyy/U3DGameCourse)
 
+# [https://iiiimmmyyy.github.io/IIIImmmyyy/2025/07/01/%E5%95%86%E4%B8%9A%E7%BA%A7HybridCLR-DLL%E6%B3%A8%E5%85%A5%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/](更好的解决方案)
 
 
 
